@@ -7,6 +7,10 @@
 </head>
 <body>
     <h1>DDoS Detection</h1>
+    <nav>
+        <a href="{{ url_for('blacklist_table') }}">Blacklist Table</a>
+    </nav>
+    <hr><br>
     <form method="post"> 
         <!-- Add input fields for the features your model expects -->
         <label for="proto_number">Protocol Number:</label>
@@ -133,5 +137,7 @@
     {% if prediction is not none %}
     <h2>Prediction: {{ prediction }}</h2>
     {% endif %}
+
+    
 </body>
 </html>

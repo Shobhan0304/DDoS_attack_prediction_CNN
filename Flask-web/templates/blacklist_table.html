@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blacklist Table</title>
+</head>
+<body>
+    <h1>Blacklist Table</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Sender Address</th>
+            <th>Prediction</th>
+        </tr>
+        {% for entry in entries %}
+            <tr>
+                <td>{{ entry.id }}</td>
+                <td>{{ entry.saddr }}</td>
+                <td>{{ entry.prediction }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>

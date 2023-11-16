@@ -1,13 +1,20 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import torch, time
+from flask_sqlalchemy import SQLAlchemy
 from model import Multiclass  # Assuming your model class is defined in a separate file
 
 app = Flask(__name__)
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blacklist.db'
+db = SQLAlchemy(app)
 # Load the pre-trained model, specifying map_location='cpu'
 #model = Multiclass()
 model = torch.load('ddos_cnn_model.pth', map_location=torch.device('cpu'))
 model.eval()
+class Blacklist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    saddr = db.Column(db.String(50), nullable=False)
+    prediction = db.Column(db.String(10), nullable=False)
+
 
 def conv_ip_addr(ip_addr):
     ip_addr = ip_addr.replace(':','.')
@@ -51,6 +58,10 @@ def predict(input_tensor):
         _, prediction = torch.max(output, 1)
     return prediction.item()
 
+def check_blacklist(ip_address):
+    # Check if the IP address is in the blacklist table
+    entry = Blacklist.query.filter_by(saddr=ip_address).first()
+    return entry
 @app.route('/', methods=['GET', 'POST'])
 def index():
     prediction = None
@@ -103,15 +114,33 @@ def index():
         category_mapping = {category: 1 if category == state else 0 for category in categories}
         param['state'] = list(category_mapping.values())
         
-        param = scaler(param)
-        features = flatten_list(list(param.values()))
-        input_tensor = torch.FloatTensor(features).unsqueeze(0).unsqueeze(1)
-        # Perform prediction using the username and password
-        prediction = predict(input_tensor)
-       # prediction = features
+
+
+#Checks the IPs in blacklist, applies the if else condition
+        blacklisted_entry = check_blacklist(saddr)
+
+        if blacklisted_entry:
+            # IP address is in the blacklist, use the prediction from the table
+            prediction = int(blacklisted_entry.prediction)
+        else:
+            param = scaler(param)
+            features = flatten_list(list(param.values()))
+            input_tensor = torch.FloatTensor(features).unsqueeze(0).unsqueeze(1)
+        
+            prediction = predict(input_tensor)
+            entry = Blacklist(saddr=param['saddr'], prediction=str(prediction))
+            db.session.add(entry)
+            db.session.commit()
 
     return render_template('index.html', prediction=prediction)
 
+@app.route('/blacklist_table')
+def blacklist_table():
+    # Retrieve data from the database
+    entries = Blacklist.query.all()
+    return render_template('blacklist_table.html', entries=entries)
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
