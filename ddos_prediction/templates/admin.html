@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<HTML>
+    <Head><title>Admin Dashboard</title></Head>
+
+    <body>
+        <h1>ADMIN DASHBOARD</h1><br>
+
+        <h2>Blacklist Table</h2>
+        <table border = "1">
+            {% for row in blacklist_table %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                </tr>
+            {% endfor %}
+            
+        </table>
+
+        <br><hr><br>
+        <h2>Data table</h2>
+        
+        <table border = "1">
+            {% for row in data_table %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                </tr>
+            {% endfor %}
+            
+        </table>
+
+
+
+    </body>
+
+</HTML>
