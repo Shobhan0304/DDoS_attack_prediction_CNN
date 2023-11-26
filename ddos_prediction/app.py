@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, jsonify
-import torch, time, csv, json
+from flask import Flask, render_template, request, jsonify, send_from_directory
+import torch, time, csv, json, os
 from model import Multiclass
 
 app = Flask(__name__)
@@ -43,7 +43,7 @@ def scaler(param):
     for i in range(len(col_to_scale)):
         param[col_to_scale[i]] = (float(param[col_to_scale[i]]) - mu[i])/std[i]
     
-    return param
+    return param 
 
 def flatten_list(nested_list):
     flattened_list = []
@@ -53,6 +53,11 @@ def flatten_list(nested_list):
         else:
             flattened_list.append(item)
     return flattened_list
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 
 @app.route('/admin', methods = ['GET'])
 def view_tables():
@@ -158,5 +163,5 @@ def upload_file():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host = '192.168.100.6', port = 5000, debug=True)
             
