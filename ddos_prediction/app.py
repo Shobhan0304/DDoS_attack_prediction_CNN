@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
-import torch, time, csv, json, os
+import torch, time, csv, json, os, socket
 from model import Multiclass
 
 app = Flask(__name__)
@@ -93,7 +93,7 @@ def upload_file():
             additional_params = {
                 'stime':time.time(),
                 'proto_number':3,
-                'saddr':'192.168.100.150',
+                'saddr':socket.gethostbyname(socket.gethostname()),
                 'daddr':'127.0.0.1:5000',
                 'pkts':2,
                 'bytes':172,
@@ -148,11 +148,13 @@ def upload_file():
 
         if prediction == True:
             message = 'Error: DDoS Attack Detected'
+            print(f'DDoS attack detected for ip: {ip}')
             with open('blacklist_table.csv', 'a', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow([ip])
         else:
             message = 'File Uploaded Successfully'
+            print(f'File uploaded by ip: {ip}')
             with open('data_table.csv', 'a', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow([upload_file.filename, ip])
@@ -163,5 +165,5 @@ def upload_file():
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 5000, debug=True)
+    app.run(host = '192.168.100.5', port = 5000, debug=True)
             
