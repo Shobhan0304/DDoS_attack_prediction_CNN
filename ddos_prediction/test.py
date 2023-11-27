@@ -1,12 +1,12 @@
 import requests
-import json, time, os
+import json, time, os, socket
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 file_path = os.path.join(script_directory, 'example_file.txt')
 
-upload_url = "http://127.0.0.1:5000/upload"
+upload_url = "http://192.168.100.5:5000/upload" #replace with the IP address of the server
 
-ips = ["192.168.1.1", "199.199.199.199", "192.168.1.3"]
+ips = [socket.gethostbyname(socket.gethostname())]
 
 for i in ips:
     additional_parameters = {
