@@ -6,7 +6,7 @@ file_path = os.path.join(script_directory, 'example_file.txt')
 
 upload_url = "http://192.168.100.5:5000/upload" #replace with the IP address of the server
 
-ips = [socket.gethostbyname(socket.gethostname())]
+ips = [socket.gethostbyname(socket.gethostname())] #if you want to run multiple bots at once, provide multiple ip addresses as list here
 
 for i in ips:
     additional_parameters = {
