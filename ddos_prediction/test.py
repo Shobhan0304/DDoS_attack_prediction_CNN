@@ -4,9 +4,9 @@ import json, time, os, socket
 script_directory = os.path.dirname(os.path.abspath(__file__))
 file_path = os.path.join(script_directory, 'example_file.txt')
 
-upload_url = "http://192.168.100.5:5000/upload" #replace with the IP address of the server
+upload_url = "http://127.0.0.1:5000/upload"
 
-ips = [socket.gethostbyname(socket.gethostname())] #if you want to run multiple bots at once, provide multiple ip addresses as list here
+ips = [socket.gethostbyname(socket.gethostname())]
 
 for i in ips:
     additional_parameters = {
