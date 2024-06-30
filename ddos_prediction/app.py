@@ -4,10 +4,8 @@ from model import Multiclass
 
 app = Flask(__name__)
 
-model = Multiclass()
-model.load_state_dict(torch.load('cso_ddos_model.pth', map_location='cpu'))
-# model.load(torch.load('cso_ddos_model.pth', map_location=torch.device('cpu')))
-# model.eval()
+model = torch.load('ddos_cnn_model_cso.pth', map_location=torch.device('cpu'))
+model.eval()
 
 
 def conv_ip_addr(ip_addr):
@@ -21,29 +19,16 @@ def conv_ip_addr(ip_addr):
     return op
 
 def predict(features):
+     
     with torch.no_grad():
-        m = 0
-        idx = 0
-        prediction = model(features)
-        # _, prediction = torch.max(output, 1)
-        print(prediction)
-        ps = prediction.tolist()[0]
-        print(ps)
 
-        for i in range(len(ps)):
-            if ps[i] < 0:
-                ps[i] = ps[i] * -1
+        output = model(features)
+        _, prediction = torch.max(output, 1)
 
-        for i in range(len(ps)):
-            if ps[i] > m:
-                m = ps[i]
-                idx = i 
-
-    print(idx)
-    if idx == 1:
-        output = False
-    else:
-        output = True
+        if prediction.item() == 1:
+            output = False
+        else:
+            output = True
     return output
 
 def scaler(param):
